@@ -1,0 +1,76 @@
+-- Kreiranje baze podataka
+CREATE DATABASE PIBookExchange;
+GO
+
+-- Postavljanje baze u kontekst
+USE PIBookExchange;
+GO
+
+-- Tabela: Rola
+CREATE TABLE Rola (
+    IDRola INT PRIMARY KEY IDENTITY(1,1),
+    Naziv NVARCHAR(50) NOT NULL
+);
+
+-- Tabela: Korisnik
+CREATE TABLE Korisnik (
+    IDKorisnik INT PRIMARY KEY IDENTITY(1,1),
+    Ime NVARCHAR(50) NOT NULL,
+    Prezime NVARCHAR(50) NOT NULL,
+    E_mail NVARCHAR(100) UNIQUE NOT NULL,
+    Telefon NVARCHAR(20),
+    Adresa NVARCHAR(255),
+    Lozinka NVARCHAR(255) NOT NULL,
+    RolaID INT NOT NULL,
+    FOREIGN KEY (RolaID) REFERENCES Rola(IDRola)
+);
+
+-- Tabela: Kategorija
+CREATE TABLE Kategorija (
+    IDKategorija INT PRIMARY KEY IDENTITY(1,1),
+    Naziv NVARCHAR(100) NOT NULL
+);
+
+-- Tabela: Naplata
+CREATE TABLE Naplata (
+    IDNaplata INT PRIMARY KEY IDENTITY(1,1),
+    Vrsta NVARCHAR(50) NOT NULL
+);
+
+-- Tabela: Oglas
+CREATE TABLE Oglas (
+    IDOglas INT PRIMARY KEY IDENTITY(1,1),
+    Naziv NVARCHAR(100) NOT NULL,
+    KategorijaID INT NOT NULL,
+    NaplataID INT NOT NULL,
+    Slika NVARCHAR(MAX),
+    Opis NVARCHAR(MAX),
+    VrijemeObjave DATETIME NOT NULL DEFAULT GETDATE(),
+    KorisnikID INT NOT NULL,
+    FOREIGN KEY (KategorijaID) REFERENCES Kategorija(IDKategorija),
+    FOREIGN KEY (NaplataID) REFERENCES Naplata(IDNaplata),
+    FOREIGN KEY (KorisnikID) REFERENCES Korisnik(IDKorisnik)
+
+);
+
+-- Tabela: Notifikacija
+CREATE TABLE Notifikacija (
+    IDNotifikacija INT PRIMARY KEY IDENTITY(1,1),
+    KorisnikID INT NOT NULL,
+	OglasID INT NULL,
+    Poruka NVARCHAR(MAX) NOT NULL,
+	TipNotifikacije NVARCHAR(50) NOT NULL,
+    Vrijeme DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (KorisnikID) REFERENCES Korisnik(IDKorisnik),
+	FOREIGN KEY (OglasID) REFERENCES Oglas(IDOglas)
+
+);
+
+-- Dodavanje testnih podataka (opcionalno)
+
+-- Dodavanje rola
+INSERT INTO Rola (Naziv) VALUES ('Admin'), ('Korisnik');
+
+
+-- Dodavanje naplata
+INSERT INTO Naplata (Vrsta) VALUES ('VISA'), ('PayPal');
